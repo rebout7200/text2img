@@ -4,4 +4,6 @@
 
 喜欢的话给我点个赞吧
 
-<iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://www.star-history.com/embed?secret=#rebout7200/text2img&Date" frameBorder="0"></iframe>
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=rebout7200/text2img&type=Date)](https://www.star-history.com/#rebout7200/text2img&Date)
