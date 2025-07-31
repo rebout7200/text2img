@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文本转图片工具</title>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -155,6 +154,38 @@
         }
 
         /* Markdown 样式 */
+        .main-content think {
+            display: block;
+            border-radius: 12px;
+            padding: 0.5rem;
+            margin-left: -0.5rem;
+            margin-right: -0.5rem;
+        }
+
+        .main-content think::before {
+            content: "AI 思考";
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: normal;
+            font-size: 0.8rem;
+        }
+
+        .main-content think {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-theme .main-content think {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .main-content think::before {
+            color: #000 !important;
+        }
+
+        .dark-theme .main-content think::before {
+            color: #fff !important;
+        }
+
         .main-content h1 {
             margin: 0.5em 0;
             font-weight: bold;
@@ -317,9 +348,9 @@
                         <option value="grok">Grok</option>
                         <option value="kimi">Kimi</option>
                         <option value="ai" selected="">AI 生成</option>
-                        <option value="custom">自定义</option>
+                        <option value="custom">用户问题</option>
                     </select>
-                    <input type="text" id="customAiLabel" placeholder="输入自定义标识..."
+                    <input type="text" id="customAiLabel" placeholder="输入用户问题..."
                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base focus:ring-2 focus:ring-blue-500 hidden">
                 </div>
 
@@ -387,13 +418,19 @@
                         文字对齐
                     </label>
                     <div class="flex space-x-2">
-                        <button class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 bg-blue-50 dark:bg-blue-900 border-blue-500" data-align="left">
+                        <button
+                            class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 bg-blue-50 dark:bg-blue-900 border-blue-500"
+                            data-align="left">
                             <i class="fas fa-align-left"></i>
                         </button>
-                        <button class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 border-gray-300 dark:border-gray-600" data-align="center">
+                        <button
+                            class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
+                            data-align="center">
                             <i class="fas fa-align-center"></i>
                         </button>
-                        <button class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 border-gray-300 dark:border-gray-600" data-align="right">
+                        <button
+                            class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
+                            data-align="right">
                             <i class="fas fa-align-right"></i>
                         </button>
                     </div>
@@ -442,7 +479,7 @@
                 </div>
 
                 <!-- 生成按钮 -->
-                <div class="sticky bottom-0 pb-6 pt-4 bg-white dark:bg-gray-800"> 
+                <div class="sticky bottom-0 pb-6 pt-4 bg-white dark:bg-gray-800">
                     <button id="generateBtn"
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center">
                         <i class="fas fa-magic mr-2"></i>
@@ -465,7 +502,8 @@
                     </div>
 
                     <div class="flex text-center mt-4">
-                        <p class="text-sm text-gray-500">由 @Rebout 制作 at <a class="text-blue-600 hover:underline" href="https://linux.do/u/rebout/">Linux.do</a></p>
+                        <p class="text-sm text-gray-500">由 @Rebout 制作 at <a class="text-blue-600 hover:underline"
+                                href="https://linux.do/u/rebout/">Linux.do</a></p>
                     </div>
                 </div>
 
@@ -476,13 +514,13 @@
         <!-- 右侧预览区域 -->
         <div class="flex-1 flex flex-col">
             <!-- 预览内容 -->
-            <div class="preview-container p-6 h-full">
-                <div class="flex items-center justify-center h-full overflow-auto">
-                    <div id="previewContainer" class="hidden">
+            <div class="preview-container p-6 h-full flex">
+                <div class="flex w-full h-full overflow-auto">
+                    <div id="previewContainer" class="hidden flex" style="margin: auto;">
                         <img id="previewImage" class="shadow-lg preview-image">
                     </div>
 
-                    <div id="placeholder" class="text-gray-400 dark:text-gray-500 text-center ">
+                    <div id="placeholder" class="text-gray-400 dark:text-gray-500 text-center" style="margin: auto;">
                         <i class="fas fa-image text-6xl mb-4"></i>
                         <p class="text-xl mb-2">准备生成图片</p>
                         <p>输入文本并点击 “生成图片” 开始</p>
@@ -512,16 +550,6 @@
 
         </div>
     </div>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZDN7NTRMPQ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-ZDN7NTRMPQ');
-</script>
 
     <script>
         // AI 图标的 base64 数据 (占位符，您可以替换为实际的图标)
