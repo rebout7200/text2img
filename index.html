@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI文本转图片工具</title>
+    <title>文本转图片工具</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -157,17 +157,16 @@
         .main-content think {
             display: block;
             border-radius: 12px;
-            padding: 0.5rem;
-            margin-left: -0.5rem;
-            margin-right: -0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
 
         .main-content think::before {
             content: "AI 思考";
             display: block;
-            margin-bottom: 0.25rem;
             font-weight: normal;
             font-size: 0.8rem;
+            padding-bottom: 1rem;
         }
 
         .main-content think {
@@ -187,37 +186,44 @@
         }
 
         .main-content h1 {
-            margin: 0.5em 0;
+            margin: 0;
+            margin-bottom: 1rem;
             font-weight: bold;
         }
 
         .main-content h2 {
-            margin: 0.5em 0;
+            margin: 0;
+            margin-bottom: 1rem;
             font-weight: bold;
         }
 
         .main-content h3 {
-            margin: 0.5em 0;
+            margin: 0;
+            margin-bottom: 1rem;
             font-weight: bold;
         }
 
         .main-content h4 {
-            margin: 0.5em 0;
+            margin: 0;
+            margin-bottom: 1rem;
             font-weight: bold;
         }
 
         .main-content h5 {
-            margin: 0.5em 0;
+            margin: 0;
+            margin-bottom: 1rem;
             font-weight: bold;
         }
 
         .main-content h6 {
-            margin: 0.5em 0;
+            margin: 0;
+            margin-bottom: 1rem;
             font-weight: bold;
         }
 
         .main-content p {
             margin: 0;
+            margin-bottom: 1rem;
         }
 
         .main-content ul,
@@ -226,7 +232,7 @@
             padding-left: 1.5em;
             display: flex;
             flex-direction: column;
-            margin: 0.5em 0;
+            margin-bottom: 1rem;
         }
 
         .main-content ol {
@@ -240,15 +246,14 @@
         }
 
         .main-content blockquote {
-            margin: 0.5em 0;
+            margin: 0;
+            margin-bottom: 1rem;
             padding: 0.5em 1em;
             border-left: 4px solid currentColor;
             opacity: 0.8;
         }
 
         .main-content code {
-            padding: 0.1em 0.3em;
-            border-radius: 3px;
             font-family: monospace;
         }
 
@@ -258,6 +263,7 @@
             border-radius: 12px;
             overflow-x: auto;
             white-space: pre-line;
+            margin-bottom: 1rem;
         }
 
         .dark-theme .main-content pre {
@@ -270,7 +276,8 @@
         }
 
         .main-content hr {
-            margin: 0.5em 0;
+            margin: 0;
+            margin-bottom: 1rem;
             border: none;
             border-top: 1px solid currentColor;
         }
@@ -878,6 +885,7 @@
                 // 设置宽度
                 if (widthMode === 'custom') {
                     elements.renderContainer.style.width = customWidth + 'px';
+                    elements.renderContainer.style.maxWidth = customWidth + 'px';
                 } else {
                     elements.renderContainer.style.width = 'auto';
                     elements.renderContainer.style.maxWidth = '600px';
