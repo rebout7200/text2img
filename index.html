@@ -382,7 +382,7 @@
 
                     <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
                         <i class="fas fa-edit mr-2"></i>
-                        文本内容 <span class="text-xs text-gray-500 ml-2">(支持 Markdown)</span>
+                        文本内容 <span class="text-xs text-gray-500 ml-2">(支持 Markdown & LaTeX)</span>
                     </label>
                     <textarea id="textInput"
                         placeholder="支持 Markdown 语法和 LaTeX 公式&#10;&#10;例如：&#10;这是行内公式：$E = mc^2$&#10;这是块级公式：&#10;$$&#10;\sum_{i=1}^{n} x_i = x_1 + x_2 + \cdots + x_n&#10;$$&#10;也支持LaTeX代码块：&#10;```latex&#10;E = mc^2&#10;```"
@@ -1101,15 +1101,32 @@
 
         // 渲染markdown并应用相对字体大小（支持LaTeX）
         function renderMarkdownContent(text, baseFontSize, fontFamily, textAlign, textColor) {
-            // 预处理：将 ```latex 代码块转换为数学公式
+
             text = text.replace(/```latex\s*\n([\s\S]*?)\n```/gi, (match, latexCode) => {
-                const cleanedCode = latexCode.trim();
+                let cleanedCode = latexCode.trim();
+
+                // 如果是 \[...\] 包裹，提取中间内容
+                const bracketMatch = cleanedCode.match(/^\\\[(.*)\\\]$/s);
+                if (bracketMatch) {
+                    cleanedCode = bracketMatch[1].trim();
+                }
+
+                // 如果是 $$...$$ 包裹，提取中间内容
+                const dollarMatch = cleanedCode.match(/^\$\$(.*)\$\$$/s);
+                if (dollarMatch) {
+                    cleanedCode = dollarMatch[1].trim();
+                }
+
                 return `$$${cleanedCode}$$`;
             });
 
-            // 在 Markdown 渲染前先处理 LaTeX 公式
-            // 处理块级公式 $$...$$（包括跨行的）
-            text = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
+            // 支持 \[...\] 块级公式，统一转为 $$...$$
+            text = text.replace(/\\\[(\s*[\s\S]*?\s*)\\\]/g, (match, formula) => {
+                return `$$${formula.trim()}$$`;
+            });
+
+            // 渲染块级公式（包括多行 $$...$$）
+            text = text.replace(/\$\$([\s\S]+?)\$\$/g, (match, formula) => {
                 try {
                     return katex.renderToString(formula.trim(), {
                         displayMode: true,
@@ -1121,8 +1138,8 @@
                 }
             });
 
-            // 处理行内公式 $...$
-            text = text.replace(/\$([^$\n]+?)\$/g, (match, formula) => {
+            // 渲染行内公式（$...$，排除 $$...$$ 的情况）
+            text = text.replace(/(?<!\$)\$([^\n$]+?)\$(?!\$)/g, (match, formula) => {
                 try {
                     return katex.renderToString(formula.trim(), {
                         displayMode: false,
@@ -1169,15 +1186,31 @@
         function renderMarkdownText(text) {
             if (!text) return '';
 
-            // 预处理LaTeX代码块
             text = text.replace(/```latex\s*\n([\s\S]*?)\n```/gi, (match, latexCode) => {
-                const cleanedCode = latexCode.trim();
+                let cleanedCode = latexCode.trim();
+
+                // 如果是 \[...\] 包裹，提取中间内容
+                const bracketMatch = cleanedCode.match(/^\\\[(.*)\\\]$/s);
+                if (bracketMatch) {
+                    cleanedCode = bracketMatch[1].trim();
+                }
+
+                // 如果是 $$...$$ 包裹，提取中间内容
+                const dollarMatch = cleanedCode.match(/^\$\$(.*)\$\$$/s);
+                if (dollarMatch) {
+                    cleanedCode = dollarMatch[1].trim();
+                }
+
                 return `$$${cleanedCode}$$`;
             });
 
-            // 在 Markdown 渲染前先处理 LaTeX 公式
-            // 处理块级公式 $$...$$
-            text = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
+            // 支持 \[...\] 块级公式，统一转为 $$...$$
+            text = text.replace(/\\\[(\s*[\s\S]*?\s*)\\\]/g, (match, formula) => {
+                return `$$${formula.trim()}$$`;
+            });
+
+            // 渲染块级公式（包括多行 $$...$$）
+            text = text.replace(/\$\$([\s\S]+?)\$\$/g, (match, formula) => {
                 try {
                     return katex.renderToString(formula.trim(), {
                         displayMode: true,
@@ -1189,8 +1222,8 @@
                 }
             });
 
-            // 处理行内公式 $...$
-            text = text.replace(/\$([^$\n]+?)\$/g, (match, formula) => {
+            // 渲染行内公式（$...$，排除 $$...$$ 的情况）
+            text = text.replace(/(?<!\$)\$([^\n$]+?)\$(?!\$)/g, (match, formula) => {
                 try {
                     return katex.renderToString(formula.trim(), {
                         displayMode: false,
