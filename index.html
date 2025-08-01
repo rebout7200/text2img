@@ -15,6 +15,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Monaco Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.34.1/min/vs/loader.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -30,6 +33,10 @@
     </script>
 
     <style>
+        body {
+            user-select: none;
+        }
+
         .font-system {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
@@ -51,8 +58,8 @@
         .color-item {
             width: 36px;
             height: 36px;
-            border-radius: 8px;
-            border: 3px solid transparent;
+            border-radius: 0.5rem;
+            border: 1px solid transparent;
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
@@ -64,7 +71,6 @@
 
         .color-item.selected {
             border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
         }
 
         .color-item.transparent {
@@ -88,7 +94,13 @@
             background: white;
             padding: 30px;
             padding-top: 30px;
+            padding-bottom: 30px;
             box-sizing: border-box;
+            padding-bottom: 0;
+        }
+
+        .render-container:has(.disclaimer) {
+            padding-bottom: 0;
         }
 
         .ai-badge {
@@ -120,7 +132,8 @@
         }
 
         .disclaimer {
-            margin-top: 20px;
+            margin-top: 1rem;
+            margin-bottom: 30px;
             line-height: 1.4;
             color: #000 !important;
         }
@@ -276,7 +289,7 @@
             font-style: italic;
         }
 
-        
+
         .main-content table {
             width: 100%;
             margin: 0;
@@ -298,6 +311,8 @@
             width: 80px;
         }
     </style>
+
+    <style id="custom-css-style"></style>
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 h-screen overflow-hidden">
@@ -317,45 +332,34 @@
 
     <div class="flex h-full md:flex-row flex-col-reverse">
         <!-- 左侧控制面板 -->
-        <div class="md:w-80 w-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto md:flex md:flex-col md:h-full [height:calc(70%)] md:[height:calc(100%)]">
-            <div class="p-6 pb-0">
+        <div
+            class="md:w-80 w-full bg-white dark:bg-gray-800 border-t border-gray-200 md:border-t-0 md:border-r md:border-gray-200 dark:border-gray-700 overflow-y-auto md:flex md:flex-col md:h-full [height:calc(70%)] md:[height:calc(100%)] user-select-none">
+
+            <div class="p-4 pb-0 pt-0">
                 <!-- 标题 -->
-                <div class="mb-6">
-                    <h1 class="text-xl font-bold text-gray-800 dark:text-white">
+                <div class="sticky top-0 pt-4 z-10 pb-4 bg-white dark:bg-gray-800">
+                    <h1 class="text-xl font-bold text-gray-800 dark:text-white flex items-center">
                         <i class="fas fa-image mr-2 text-blue-600"></i>
-                        文本转图片
-                    </h1>
+                    文本转图片</h1>
                 </div>
 
                 <!-- 文本输入 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
                         <i class="fas fa-edit mr-2"></i>
                         文本内容 <span class="text-xs text-gray-500 ml-2">(支持 Markdown 语法)</span>
                     </label>
-                    <textarea id="textInput" placeholder="支持 Markdown 语法
-# 标题
-**粗体**
-*斜体*
-- 列表项
-1. 有序列表项
-> 引用
-`代码`
-```python
-代码块
-```
-" class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows="10"></textarea>
+                    <textarea id="textInput" placeholder="支持 Markdown 语法..." class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                        resize-y" rows="10"></textarea>
                 </div>
 
+
                 <!-- AI 标识选择 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        <i class="fas fa-robot mr-2"></i>
-                        AI 标识
-                    </label>
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-robot mr-2"></i>AI 标识</label>
                     <select id="aiLabelSelect"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base focus:ring-2 focus:ring-blue-500 mb-3">
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base focus:ring-2 focus:ring-blue-500">
                         <option value="chatgpt">ChatGPT</option>
                         <option value="gemini">Gemini</option>
                         <option value="claude">Claude</option>
@@ -363,30 +367,28 @@
                         <option value="deepseek">DeepSeek</option>
                         <option value="grok">Grok</option>
                         <option value="kimi">Kimi</option>
-                        <option value="ai" selected="">AI 生成</option>
-                                                <option value="custom">自定义</option>
+                        <option value="ai" selected>AI 生成</option>
+                        <option value="custom">自定义</option>
                     </select>
                     <input type="text" id="customAiLabel" placeholder="输入自定义 AI 标识..."
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base focus:ring-2 focus:ring-blue-500 hidden">
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base focus:ring-2 focus:ring-blue-500 hidden mt-4">
                 </div>
 
+
                 <!-- 免责声明文本 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4">
                         <i class="fas fa-exclamation-triangle mr-2"></i>
                         免责声明
                     </label>
-                    <textarea id="disclaimerInput"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base resize-none focus:ring-2 focus:ring-blue-500"
-                        rows="3">AI 模型可能会犯错误、误解意图、产生幻觉或给出不正确的答案。</textarea>
+                    <textarea id="disclaimerInput" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base resize-none focus:ring-2 focus:ring-blue-500
+                        resize-y" rows="3">AI 模型可能会犯错误、误解意图、产生幻觉或给出不正确的答案。</textarea>
                 </div>
 
                 <!-- 字体设置 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        <i class="fas fa-font mr-2"></i>
-                        字体
-                    </label>
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-font mr-2"></i>字体</label>
                     <select id="fontSelect"
                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base focus:ring-2 focus:ring-blue-500">
                         <option value="system">系统默认字体</option>
@@ -396,113 +398,136 @@
                 </div>
 
                 <!-- 字体大小 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        <i class="fas fa-text-height mr-2"></i>
-                        字体大小: <span id="fontSizeDisplay" class="ml-2 text-blue-600 font-semibold">20px</span>
-                    </label>
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-text-height mr-2"></i>字体大小: <span id="fontSizeDisplay"
+                            class="ml-2 text-blue-600 font-semibold">20px</span></label>
                     <input type="range" id="fontSizeSlider" min="16" max="32" value="20"
                         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
                 </div>
 
                 <!-- 图片宽度 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        <i class="fas fa-arrows-alt-h mr-2"></i>
-                        图片宽度
-                    </label>
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-arrows-alt-h mr-2"></i>图片宽度</label>
                     <div class="width-control">
-                        <label class="flex items-center">
-                            <input type="radio" name="widthMode" value="auto" checked="" class="mr-2">
-                            <span class="text-sm text-gray-700 dark:text-gray-300">自动</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="widthMode" value="custom" class="mr-2">
-                            <span class="text-sm text-gray-700 dark:text-gray-300">自定义</span>
-                        </label>
+                        <label class="flex items-center"><input type="radio" name="widthMode" value="auto" checked
+                                class="mr-2"><span class="text-sm text-gray-700 dark:text-gray-300">自动</span></label>
+                        <label class="flex items-center"><input type="radio" name="widthMode" value="custom"
+                                class="mr-2"><span class="text-sm text-gray-700 dark:text-gray-300">自定义</span></label>
                         <input type="number" id="customWidth" value="400" min="200" max="800" step="50"
                             class="width-input px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500"
-                            disabled="">
+                            disabled>
                         <span class="text-xs text-gray-500">px</span>
                     </div>
                 </div>
 
                 <!-- 对齐方式 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        <i class="fas fa-align-left mr-2"></i>
-                        文字对齐
-                    </label>
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-align-left mr-2"></i>文字对齐</label>
                     <div class="flex space-x-2">
                         <button
                             class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 bg-blue-50 dark:bg-blue-900 border-blue-500"
-                            data-align="left">
-                            <i class="fas fa-align-left dark:text-white"></i>
-                        </button>
+                            data-align="left"><i class="fas fa-align-left dark:text-white"></i></button>
                         <button
                             class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
-                            data-align="center">
-                            <i class="fas fa-align-center dark:text-white"></i>
-                        </button>
+                            data-align="center"><i class="fas fa-align-center dark:text-white"></i></button>
                         <button
                             class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
-                            data-align="right">
-                            <i class="fas fa-align-right dark:text-white"></i>
-                        </button>
+                            data-align="right"><i class="fas fa-align-right dark:text-white"></i></button>
                     </div>
                 </div>
-
                 <!-- 图片主题 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        <i class="fas fa-adjust mr-2"></i>
-                        图片主题
-                    </label>
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-adjust mr-2"></i>图片主题</label>
                     <div class="flex space-x-2">
                         <button
                             class="theme-btn flex-1 py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 bg-blue-50 dark:bg-blue-900 border-blue-500 dark:border-blue-900 dark:text-white"
-                            data-theme="light">
-                            <i class="fas fa-sun mr-2"></i>浅色
-                        </button>
+                            data-theme="light"><i class="fas fa-sun mr-2"></i>浅色</button>
                         <button
                             class="theme-btn flex-1 py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 dark:text-white"
-                            data-theme="dark">
-                            <i class="fas fa-moon mr-2 "></i>深色
-                        </button>
+                            data-theme="dark"><i class="fas fa-moon mr-2 "></i>深色</button>
                     </div>
                 </div>
-
                 <!-- 文字颜色 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        <i class="fas fa-palette mr-2"></i>
-                        文字颜色
-                    </label>
-                    <div class="color-palette" id="textColorPalette">
-                        <!-- 颜色选项将由JS生成 -->
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-palette mr-2"></i>文字颜色</label>
+                    <div class="color-palette" id="textColorPalette"></div>
+                </div>
+                <!-- 背景颜色 -->
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-fill-drip mr-2"></i>背景颜色</label>
+                    <div class="color-palette" id="bgColorPalette"></div>
+                </div>
+
+                <!-- 自定义样式 -->
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-paint-brush mr-2"></i>自定义颜色与背景</label>
+
+                    <div class="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">字体颜色</span>
+                            <input type="color" id="font-color-picker" value="#000000"
+                                class="w-10 h-8 p-1 border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">背景颜色</span>
+                            <input type="color" id="bg-color-picker" value="#ffffff"
+                                class="w-10 h-8 p-1 border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+                        </div>
+
+                        <div>
+                            <label for="bg-image-url" class="text-sm text-gray-600 dark:text-gray-400">背景图片
+                                URL</label>
+                            <input type="text" id="bg-image-url" placeholder="输入图片链接..."
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm resize-none focus:ring-2 focus:ring-blue-500 mt-4" />
+                        </div>
+
+                        <div>
+                            <label for="bg-image-opacity" class="text-sm text-gray-600 dark:text-gray-400">背景图片透明度:
+                                <span id="bg-image-opacity-display">5%</span></label>
+                            <input type="range" id="bg-image-opacity" min="0" max="1" step="0.05" value="0.05"
+                                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mt-4">
+                        </div>
                     </div>
                 </div>
 
-                <!-- 背景颜色 -->
-                <div class="mb-6">
-                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        <i class="fas fa-fill-drip mr-2"></i>
-                        背景颜色
-                    </label>
-                    <div class="color-palette" id="bgColorPalette">
-                        <!-- 颜色选项将由JS生成 -->
+                <!-- 元素可见性 -->
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-eye mr-2"></i>元素可见性与元数据</label>
+                    <div class="space-y-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <label class="flex items-center justify-between"><span
+                                class="text-sm text-gray-600 dark:text-gray-400">显示 AI 标识</span><input type="checkbox"
+                                id="show-ai-badge"
+                                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                checked></label>
+                        <label class="flex items-center justify-between"><span
+                                class="text-sm text-gray-600 dark:text-gray-400">显示免责声明</span><input type="checkbox"
+                                id="show-disclaimer"
+                                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                checked></label>
+                    </div>
+                </div>
+
+                <!-- 自定义 CSS -->
+                <div>
+                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 mt-4"><i
+                            class="fas fa-code mr-2"></i>自定义 CSS</label>
+                    <div id="custom-css-container" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden resize-y"
+                        style="height: 150px;">
+                        <textarea id="custom-css" class="hidden"></textarea>
                     </div>
                 </div>
 
                 <!-- 生成按钮 -->
-                <div class="sticky bottom-0 pb-6 pt-4 bg-white dark:bg-gray-800">
-                    <button id="generateBtn"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center">
-                        <i class="fas fa-magic mr-2"></i>
-                        <span>生成图片</span>
-                    </button>
-
-                    <div class="flex gap-3 mt-4">
+                <div class="sticky bottom-0 pb-4 pt-4 bg-white dark:bg-gray-800">
+                    <div class="flex gap-3">
                         <button id="copyBtn"
                             class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed w-1/2"
                             disabled="">
@@ -528,18 +553,18 @@
         </div>
 
         <!-- 右侧预览区域 -->
-        <div class="flex-1 flex flex-col [height:calc(30%)] md:[height:calc(100%)]">
+        <div class="flex-1 flex flex-col [height:calc(30%)] md:[height:calc(100%)] user-select-none">
             <!-- 预览内容 -->
-            <div class="preview-container p-6 h-full w-full flex">
-                <div class="flex w-full h-full overflow-auto">
+            <div class="preview-container h-full w-full flex overflow-auto">
+                <div class="flex w-full h-full p-4">
                     <div id="previewContainer" class="hidden flex" style="margin: auto;">
-                        <img id="previewImage" class="shadow-lg preview-image">
+                        <img id="previewImage" class="shadow-lg preview-image" draggable="false">
                     </div>
 
                     <div id="placeholder" class="text-gray-400 dark:text-gray-500 text-center" style="margin: auto;">
                         <i class="fas fa-image text-6xl mb-4"></i>
                         <p class="text-xl mb-2">准备生成图片</p>
-                        <p>输入文本并点击 “生成图片” 开始</p>
+                        <p>输入文本以开始</p>
                     </div>
                 </div>
             </div>
@@ -549,11 +574,15 @@
     <!-- 隐藏的渲染容器 -->
     <div id="renderContainer" style="position: absolute; left: -9999px; top: -9999px; display: flex;">
         <div id="renderContent" class="render-container">
+            <div id="background-image-layer"
+                style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-size: cover; background-position: center; z-index: -10">
+            </div>
 
             <!-- AI标识 -->
             <div class="ai-badge" id="aiBadge">
                 <img class="ai-icon" id="aiIcon" src="" alt="">
                 <span id="aiLabelText">AI 生成</span>
+                <span id="author-display" class="ml-2" style="display: none;"></span>
             </div>
 
             <!-- 主要文本内容 -->
@@ -646,8 +675,56 @@
             disclaimerText: document.getElementById('disclaimerText'),
             textColorPalette: document.getElementById('textColorPalette'),
             bgColorPalette: document.getElementById('bgColorPalette'),
-            renderDiv: document.getElementById('renderDiv')
+            fontColorPicker: document.getElementById('font-color-picker'),
+            bgColorPicker: document.getElementById('bg-color-picker'),
+            bgImageUrl: document.getElementById('bg-image-url'),
+            bgImageOpacity: document.getElementById('bg-image-opacity'),
+            bgImageOpacityDisplay: document.getElementById('bg-image-opacity-display'),
+            backgroundImageLayer: document.getElementById('background-image-layer'),
+            showAiBadge: document.getElementById('show-ai-badge'),
+            showDisclaimer: document.getElementById('show-disclaimer'),
+            customCss: document.getElementById('custom-css'),
+            customCssStyle: document.getElementById('custom-css-style')
         };
+
+        // --- Event Listeners ---
+
+        // Event listeners for color pickers
+        elements.fontColorPicker.addEventListener('input', () => {
+            elements.textColorPalette.querySelectorAll('.color-item').forEach(item => item.classList.remove('selected'));
+            currentTextColorIndex = -1; // Deselect palette
+            generateImage();
+        });
+        elements.bgColorPicker.addEventListener('input', () => {
+            elements.bgColorPalette.querySelectorAll('.color-item').forEach(item => item.classList.remove('selected'));
+            currentBgColorIndex = -1; // Deselect palette
+            generateImage();
+        });
+
+        elements.bgImageUrl.addEventListener('input', generateImage);
+        elements.bgImageOpacity.addEventListener('input', () => {
+            elements.bgImageOpacityDisplay.textContent = `${Math.round(elements.bgImageOpacity.value * 100)}%`;
+            generateImage();
+        });
+
+        elements.showAiBadge.addEventListener('change', generateImage);
+        elements.showDisclaimer.addEventListener('change', generateImage);
+
+        elements.customCss.addEventListener('input', () => {
+            elements.customCssStyle.textContent = elements.customCss.value;
+            generateImage();
+        });
+
+        // Add tab support to custom CSS textarea
+        elements.customCss.addEventListener('keydown', function (e) {
+            if (e.key == 'Tab') {
+                e.preventDefault();
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 2;
+            }
+        });
 
         // 获取当前主题的颜色
         function getCurrentColors() {
@@ -655,7 +732,7 @@
         }
 
         // 创建颜色选择器
-        function createColorPalette(container, colors, selectedIndex, callback) {
+        function createColorPalette(container, colors, selectedIndex, colorPicker, callback) {
             container.innerHTML = '';
             colors.forEach((color, index) => {
                 const colorItem = document.createElement('div');
@@ -671,6 +748,9 @@
                     container.querySelectorAll('.color-item').forEach(item =>
                         item.classList.remove('selected'));
                     colorItem.classList.add('selected');
+                    if (color !== 'transparent') {
+                        colorPicker.value = color;
+                    }
                     callback(index);
                 });
                 container.appendChild(colorItem);
@@ -681,12 +761,12 @@
         function updateColorPalettes() {
             const colors = getCurrentColors();
 
-            createColorPalette(elements.textColorPalette, colors.text, currentTextColorIndex, (index) => {
+            createColorPalette(elements.textColorPalette, colors.text, currentTextColorIndex, elements.fontColorPicker, (index) => {
                 currentTextColorIndex = index;
                 generateImage();
             });
 
-            createColorPalette(elements.bgColorPalette, colors.bg, currentBgColorIndex, (index) => {
+            createColorPalette(elements.bgColorPalette, colors.bg, currentBgColorIndex, elements.bgColorPicker, (index) => {
                 currentBgColorIndex = index;
                 generateImage();
             });
@@ -846,54 +926,53 @@
             }
 
             try {
-                const colors = getCurrentColors();
                 const fontSize = parseInt(elements.fontSizeSlider.value);
                 const fontFamily = elements.fontSelect.value;
                 const widthMode = document.querySelector('input[name="widthMode"]:checked').value;
                 const customWidth = elements.customWidth.value;
 
-                const textColor = colors.text[currentTextColorIndex];
-                const bgColor = colors.bg[currentBgColorIndex];
+                // 优先使用 color picker 的值, 这是所有颜色设置的最终来源
+                const textColor = elements.fontColorPicker.value;
+                const bgColor = elements.bgColorPicker.value;
 
-                // 更新AI标识
+                // --- 更新渲染内容 ---
+
+                // 1. 可见性 和 元数据
+                elements.aiBadge.style.display = elements.showAiBadge.checked ? 'flex' : 'none';
+                elements.disclaimerText.style.display = elements.showDisclaimer.checked ? 'block' : 'none';
+
+                // 2. 更新文本内容
                 elements.aiLabelText.textContent = getCurrentAiLabel();
                 elements.aiIcon.src = getCurrentAiIcon();
-
-                // 更新免责声明文本
                 elements.disclaimerText.textContent = elements.disclaimerInput.value || '';
 
-                // 渲染markdown内容
+                // 3. 渲染Markdown
                 renderMarkdownContent(text, fontSize, fontFamily, currentTextAlign, textColor);
 
-                // 设置相对字体大小
+                // 4. 设置字体相对大小
                 const aiBadgeSize = Math.max(10, fontSize * 0.8);
                 const disclaimerSize = Math.max(8, fontSize * 0.8);
-
-                // AI标识样式（相对大小）
                 elements.aiBadge.style.fontSize = aiBadgeSize + 'px';
-                elements.aiBadge.style.color = textColor;
                 elements.aiBadge.style.opacity = '0.7';
-
-                // 免责声明样式（相对大小）
                 elements.disclaimerText.style.fontSize = disclaimerSize + 'px';
-                elements.disclaimerText.style.color = textColor;
                 elements.disclaimerText.style.opacity = '0.6';
 
-                // 设置主题
+                // 5. 设置主题和颜色
                 if (currentImageTheme === 'dark') {
                     elements.renderContent.classList.add('dark-theme');
                 } else {
                     elements.renderContent.classList.remove('dark-theme');
                 }
+                elements.renderContent.style.backgroundColor = bgColor;
+                elements.aiBadge.style.color = textColor;
+                elements.disclaimerText.style.color = textColor;
 
-                // 设置背景颜色
-                if (bgColor === 'transparent') {
-                    elements.renderContent.style.backgroundColor = 'transparent';
-                } else {
-                    elements.renderContent.style.backgroundColor = bgColor;
-                }
+                // 6. 设置背景图片
+                elements.renderContent.style.position = 'relative'; // 确保堆叠上下文
+                elements.backgroundImageLayer.style.backgroundImage = `url('${elements.bgImageUrl.value}')`;
+                elements.backgroundImageLayer.style.opacity = elements.bgImageOpacity.value;
 
-                // 设置宽度
+                // 7. 设置宽度
                 if (widthMode === 'custom') {
                     elements.renderContainer.style.width = customWidth + 'px';
                     elements.renderContainer.style.maxWidth = customWidth + 'px';
@@ -959,23 +1038,6 @@
             link.click();
         });
 
-        // 生成按钮
-        elements.generateBtn.addEventListener('click', async () => {
-            const text = elements.textInput.value.trim();
-            if (!text) {
-                showCustomModal('提示', '请输入要转换的文本');
-                return;
-            }
-
-            elements.generateBtn.disabled = true;
-            elements.generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>生成中...';
-
-            await generateImage();
-
-            elements.generateBtn.disabled = false;
-            elements.generateBtn.innerHTML = '<i class="fas fa-magic mr-2"></i>生成图片';
-        });
-
         // 监听输入变化自动生成
         [elements.textInput, elements.disclaimerInput, elements.fontSelect].forEach(element => {
             element.addEventListener('input', generateImage);
@@ -989,7 +1051,48 @@
         }
 
         // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => {
+            let monacoEditor;
+
+            // --- Initialize Monaco Editor ---
+            require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.34.1/min/vs' } });
+            require(['vs/editor/editor.main'], function () {
+                const container = document.getElementById('custom-css-container');
+                monacoEditor = monaco.editor.create(container, {
+                    value: `/* 在此输入自定义 CSS */\n.main-content p {\n  \n}`,
+                    language: 'css',
+                    theme: document.documentElement.classList.contains('dark') ? 'vs-dark' : 'vs',
+                    automaticLayout: true,
+                    minimap: { enabled: false },
+                    wordWrap: 'on',
+                    scrollbar: {
+                        vertical: 'auto',
+                        horizontal: 'auto'
+                    }
+                });
+
+                // Link editor changes to the image generation
+                monacoEditor.onDidChangeModelContent(() => {
+                    const cssValue = monacoEditor.getValue();
+                    elements.customCssStyle.textContent = cssValue;
+                    generateImage();
+                });
+            });
+
+            // --- Theme Switching for Editor ---
+            const themeObserver = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.attributeName === 'class' && monacoEditor) {
+                        const isDark = document.documentElement.classList.contains('dark');
+                        monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
+                    }
+                });
+            });
+            themeObserver.observe(document.documentElement, { attributes: true });
+
+            // Initial setup
+            init();
+        });
     </script>
 
 
