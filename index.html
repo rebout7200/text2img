@@ -123,8 +123,6 @@
             background-color: #ffffff;
             border-radius: 12px;
             padding: 5px;
-            margin-left: -5px;
-            margin-right: -5px;
         }
 
         .dark-theme #aiLabelText {
@@ -1288,12 +1286,14 @@
                     const newTextColor = colors.text[currentTextColorIndex];
                     if (newTextColor !== 'transparent') {
                         elements.fontColorPicker.value = newTextColor;
+                        elements.fontColorPicker.dispatchEvent(new Event('input'));
                     }
                 }
                 if (currentBgColorIndex >= 0 && currentBgColorIndex < colors.bg.length) {
                     const newBgColor = colors.bg[currentBgColorIndex];
                     if (newBgColor !== 'transparent') {
                         elements.bgColorPicker.value = newBgColor;
+                        elements.bgColorPicker.dispatchEvent(new Event('input'));
                     }
                 }
 
