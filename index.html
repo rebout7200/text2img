@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文本转图片工具</title>
+    <title>文本转图片 @Rebout</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -74,24 +74,6 @@
                 linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
             background-size: 8px 8px;
             background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
-        }
-
-        .preview-container {
-            background-image:
-                linear-gradient(45deg, #f3f4f6 25%, transparent 25%),
-                linear-gradient(-45deg, #f3f4f6 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #f3f4f6 75%),
-                linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-        }
-
-        .dark .preview-container {
-            background-image:
-                linear-gradient(45deg, #374151 25%, transparent 25%),
-                linear-gradient(-45deg, #374151 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #374151 75%),
-                linear-gradient(-45deg, transparent 75%, #374151 75%);
         }
 
         /* 预览显示样式 */
@@ -322,9 +304,9 @@
         });
     </script>
 
-    <div class="flex h-full">
+    <div class="flex h-full md:flex-row flex-col-reverse">
         <!-- 左侧控制面板 -->
-        <div class="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
+        <div class="md:w-80 w-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto md:flex md:flex-col md:h-full [height:calc(70%)] md:[height:calc(100%)]">
             <div class="p-6 pb-0">
                 <!-- 标题 -->
                 <div class="mb-6">
@@ -338,11 +320,21 @@
                 <div class="mb-6">
                     <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                         <i class="fas fa-edit mr-2"></i>
-                        文本内容 <span class="text-xs text-gray-500 ml-2">(支持 Markdown)</span>
+                        文本内容 <span class="text-xs text-gray-500 ml-2">(支持 Markdown 语法)</span>
                     </label>
-                    <textarea id="textInput" placeholder="在此输入要转换的文本..."
-                        class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows="5"></textarea>
+                    <textarea id="textInput" placeholder="支持 Markdown 语法
+# 标题
+**粗体**
+*斜体*
+- 列表项
+1. 有序列表项
+> 引用
+`代码`
+```python
+代码块
+```
+" class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        rows="10"></textarea>
                 </div>
 
                 <!-- AI 标识选择 -->
@@ -360,9 +352,9 @@
                         <option value="grok">Grok</option>
                         <option value="kimi">Kimi</option>
                         <option value="ai" selected="">AI 生成</option>
-                        <option value="custom">用户问题</option>
+                        <option value="custom">自定义</option>
                     </select>
-                    <input type="text" id="customAiLabel" placeholder="输入用户问题..."
+                    <input type="text" id="customAiLabel" placeholder="输入自定义 AI 标识..."
                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base focus:ring-2 focus:ring-blue-500 hidden">
                 </div>
 
@@ -433,17 +425,17 @@
                         <button
                             class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 bg-blue-50 dark:bg-blue-900 border-blue-500"
                             data-align="left">
-                            <i class="fas fa-align-left"></i>
+                            <i class="fas fa-align-left dark:text-white"></i>
                         </button>
                         <button
                             class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
                             data-align="center">
-                            <i class="fas fa-align-center"></i>
+                            <i class="fas fa-align-center dark:text-white"></i>
                         </button>
                         <button
                             class="align-btn flex-1 py-2 px-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
                             data-align="right">
-                            <i class="fas fa-align-right"></i>
+                            <i class="fas fa-align-right dark:text-white"></i>
                         </button>
                     </div>
                 </div>
@@ -456,14 +448,14 @@
                     </label>
                     <div class="flex space-x-2">
                         <button
-                            class="theme-btn flex-1 py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 bg-blue-50 dark:bg-blue-900 border-blue-500"
+                            class="theme-btn flex-1 py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 bg-blue-50 dark:bg-blue-900 border-blue-500 dark:border-blue-900 dark:text-white"
                             data-theme="light">
                             <i class="fas fa-sun mr-2"></i>浅色
                         </button>
                         <button
-                            class="theme-btn flex-1 py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500"
+                            class="theme-btn flex-1 py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-blue-500 dark:text-white"
                             data-theme="dark">
-                            <i class="fas fa-moon mr-2"></i>深色
+                            <i class="fas fa-moon mr-2 "></i>深色
                         </button>
                     </div>
                 </div>
@@ -500,13 +492,13 @@
 
                     <div class="flex gap-3 mt-4">
                         <button id="copyBtn"
-                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center disabled:bg-gray-400 disabled:cursor-not-allowed w-1/2"
+                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed w-1/2"
                             disabled="">
                             <i class="fas fa-copy mr-2"></i>
                             复制图片
                         </button>
                         <button id="downloadBtn"
-                            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center disabled:bg-gray-400 disabled:cursor-not-allowed w-1/2"
+                            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed w-1/2"
                             disabled="">
                             <i class="fas fa-download mr-2"></i>
                             下载图片
@@ -524,9 +516,9 @@
         </div>
 
         <!-- 右侧预览区域 -->
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col [height:calc(30%)] md:[height:calc(100%)]">
             <!-- 预览内容 -->
-            <div class="preview-container p-6 h-full flex">
+            <div class="preview-container p-6 h-full w-full flex">
                 <div class="flex w-full h-full overflow-auto">
                     <div id="previewContainer" class="hidden flex" style="margin: auto;">
                         <img id="previewImage" class="shadow-lg preview-image">
